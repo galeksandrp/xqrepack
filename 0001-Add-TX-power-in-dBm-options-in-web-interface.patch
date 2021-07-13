@@ -41,7 +41,7 @@ index 0a395ba..84712f3 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -79,7 +79,7 @@ index 0a395ba..84712f3 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -121,7 +121,7 @@ index 9ced932..f61e909 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -159,7 +159,7 @@ index 9ced932..f61e909 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -201,7 +201,7 @@ index 213d4b7..d249597 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -239,7 +239,7 @@ index 213d4b7..d249597 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -277,7 +277,7 @@ index 213d4b7..d249597 100644
                  <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
                  <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
                  <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
-+                <!-- If you return to stock FW from this patched FW, "max" setting will be used by default -->
++                
 +                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
 +                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
 +                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
@@ -307,7 +307,7 @@ index 213d4b7..d249597 100644
 +                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
 +                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
 +                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
-+                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option> 
              </select>
          </span>
          <em class="t"></em>
