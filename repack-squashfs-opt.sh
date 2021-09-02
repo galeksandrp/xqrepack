@@ -30,7 +30,7 @@ unsquashfs -f -d "$FSDIR" "$IMG"
 >&2 echo "patching squashfs..."
 
 # create /opt dir
-mkdir "$FSDIR/opt"
+mkdir -p "$FSDIR/opt"
 chmod 755 "$FSDIR/opt"
 
 # modify dropbear init
@@ -103,7 +103,11 @@ done
 sed -i 's@\w\+.miwifi.com@localhost@g' $FSDIR/etc/config/miwifi
 
 # apply patch from xqrepack repository
-(cd "$FSDIR" && patch -p1) < 0001-Add-TX-power-in-dBm-options-in-web-interface.patch
+if echo "$IMG" | rev | cut -d '/' -f2 | rev | grep -Eq '^miwifi_ra70_'; then
+    (cd "$FSDIR" && patch -p1 --no-backup-if-mismatch) < 0001-Add-TX-power-in-dBm-options-in-web-interface-ra70.patch
+else
+    (cd "$FSDIR" && patch -p1 --no-backup-if-mismatch) < 0001-Add-TX-power-in-dBm-options-in-web-interface.patch
+fi
 
 >&2 echo "repacking squashfs..."
 rm -f "$IMG.new"

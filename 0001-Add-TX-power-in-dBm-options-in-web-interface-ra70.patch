@@ -1,0 +1,405 @@
+diff --git a/lib/wifi/qcawificfg80211.sh b/lib/wifi/qcawificfg80211.sh
+index a0a44af..d7c3993 100644
+--- a/lib/wifi/qcawificfg80211.sh
++++ b/lib/wifi/qcawificfg80211.sh
+@@ -4239,7 +4239,17 @@ enable_vifs_qcawificfg80211() {
+ 		fi
+ 
+ 		config_get txpwr "$device" txpwr
+-		if [ "$txpwr" = "mid" ]; then
++		# If you return to stock FW from this patched FW, $max_power setting will be used by default
++		txpwr_is_set_in_dbm=0
++		case "$txpwr" in
++			dbm*)
++				txpwr_is_set_in_dbm=1
++				;;
++		esac
++		# This means that you can set exact TX power in dBm with POST request to http://192.168.31.1/cgi-bin/luci/;stok=<STOK>/api/xqnetwork/set_wifi
++		if [ $txpwr_is_set_in_dbm == 1 ]; then
++			txpower="${txpwr#dbm}"
++		elif [ "$txpwr" = "mid" ]; then
+ 			txpower=`expr $max_power - $mid_sub`
+ 		elif [ "$txpwr" = "min" ]; then
+ 			txpower=`expr $max_power - $min_sub`
+diff --git a/usr/lib/lua/luci/view/web/apsetting/wifi.htm b/usr/lib/lua/luci/view/web/apsetting/wifi.htm
+index 3b70f91..639aa83 100755
+--- a/usr/lib/lua/luci/view/web/apsetting/wifi.htm
++++ b/usr/lib/lua/luci/view/web/apsetting/wifi.htm
+@@ -242,6 +242,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -331,6 +361,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -404,6 +464,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -502,6 +592,36 @@ local capmode = XQFunction.getCAPMode()
+                     <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                     <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                     <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                    <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                    <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                    <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                    <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                    <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                    <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                    <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                    <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                    <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                    <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                    <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                    <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                    <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                    <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                    <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                    <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                    <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                    <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                    <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                    <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                    <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                    <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                    <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                    <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                    <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                    <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                    <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                    <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                    <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                    <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+                 </select>
+             </span>
+             <em class="t"></em>
+@@ -554,6 +674,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+diff --git a/usr/lib/lua/luci/view/web/inc/wifi.html b/usr/lib/lua/luci/view/web/inc/wifi.html
+index 112fbfa..eab42bc 100644
+--- a/usr/lib/lua/luci/view/web/inc/wifi.html
++++ b/usr/lib/lua/luci/view/web/inc/wifi.html
+@@ -298,6 +298,36 @@ local hardware = string.lower( XQSysUtil.getHardware() )
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -422,6 +452,36 @@ local hardware = string.lower( XQSysUtil.getHardware() )
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+diff --git a/usr/lib/lua/luci/view/web/setting/wifi.htm b/usr/lib/lua/luci/view/web/setting/wifi.htm
+index 4300e05..f6cc473 100755
+--- a/usr/lib/lua/luci/view/web/setting/wifi.htm
++++ b/usr/lib/lua/luci/view/web/setting/wifi.htm
+@@ -294,6 +294,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -443,6 +473,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
+@@ -601,6 +661,36 @@ local capmode = XQFunction.getCAPMode()
+                 <option value="max"{if ($txpwr == "max")} selected{/if}><%:穿墙%></option>
+                 <option value="mid"{if ($txpwr == "mid")} selected{/if}><%:标准%></option>
+                 <option value="min"{if ($txpwr == "min")} selected{/if}><%:节能%></option>
++                <option value="dbm30"{if ($txpwr == "dbm30")} selected{/if}>30 dBm (1000 mW)</option>
++                <option value="dbm29"{if ($txpwr == "dbm29")} selected{/if}>29 dBm (794 mW)</option>
++                <option value="dbm28"{if ($txpwr == "dbm28")} selected{/if}>28 dBm (630 mW)</option>
++                <option value="dbm27"{if ($txpwr == "dbm27")} selected{/if}>27 dBm (501 mW)</option>
++                <option value="dbm26"{if ($txpwr == "dbm26")} selected{/if}>26 dBm (398 mW)</option>
++                <option value="dbm25"{if ($txpwr == "dbm25")} selected{/if}>25 dBm (316 mW)</option>
++                <option value="dbm24"{if ($txpwr == "dbm24")} selected{/if}>24 dBm (251 mW)</option>
++                <option value="dbm23"{if ($txpwr == "dbm23")} selected{/if}>23 dBm (199 mW)</option>
++                <option value="dbm22"{if ($txpwr == "dbm22")} selected{/if}>22 dBm (158 mW)</option>
++                <option value="dbm21"{if ($txpwr == "dbm21")} selected{/if}>21 dBm (125 mW)</option>
++                <option value="dbm20"{if ($txpwr == "dbm20")} selected{/if}>20 dBm (100 mW)</option>
++                <option value="dbm19"{if ($txpwr == "dbm19")} selected{/if}>19 dBm (79 mW)</option>
++                <option value="dbm18"{if ($txpwr == "dbm18")} selected{/if}>18 dBm (63 mW)</option>
++                <option value="dbm17"{if ($txpwr == "dbm17")} selected{/if}>17 dBm (50 mW)</option>
++                <option value="dbm16"{if ($txpwr == "dbm16")} selected{/if}>16 dBm (39 mW)</option>
++                <option value="dbm15"{if ($txpwr == "dbm15")} selected{/if}>15 dBm (31 mW)</option>
++                <option value="dbm14"{if ($txpwr == "dbm14")} selected{/if}>14 dBm (25 mW)</option>
++                <option value="dbm13"{if ($txpwr == "dbm13")} selected{/if}>13 dBm (19 mW)</option>
++                <option value="dbm12"{if ($txpwr == "dbm12")} selected{/if}>12 dBm (15 mW)</option>
++                <option value="dbm11"{if ($txpwr == "dbm11")} selected{/if}>11 dBm (12 mW)</option>
++                <option value="dbm10"{if ($txpwr == "dbm10")} selected{/if}>10 dBm (10 mW)</option>
++                <option value="dbm9"{if ($txpwr == "dbm9")} selected{/if}>9 dBm (7 mW)</option>
++                <option value="dbm8"{if ($txpwr == "dbm8")} selected{/if}>8 dBm (6 mW)</option>
++                <option value="dbm7"{if ($txpwr == "dbm7")} selected{/if}>7 dBm (5 mW)</option>
++                <option value="dbm6"{if ($txpwr == "dbm6")} selected{/if}>6 dBm (3.9 mW)</option>
++                <option value="dbm5"{if ($txpwr == "dbm5")} selected{/if}>5 dBm (3 mW)</option>
++                <option value="dbm4"{if ($txpwr == "dbm4")} selected{/if}>4 dBm (2 mW)</option>
++                <option value="dbm3"{if ($txpwr == "dbm3")} selected{/if}>3 dBm (1.9 mW)</option>
++                <option value="dbm2"{if ($txpwr == "dbm2")} selected{/if}>2 dBm (1.5 mW)</option>
++                <option value="dbm1"{if ($txpwr == "dbm1")} selected{/if}>1 dBm (1.2 mW)</option>
+             </select>
+         </span>
+         <em class="t"></em>
